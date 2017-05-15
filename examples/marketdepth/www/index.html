@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+<script type="text/javascript">
+ window.onload = function() {
+     var output = document.getElementById("chartContainer");
+     var ws;
+		 var dps = [];
+     var chart;
+		 chart = new Chart(document.getElementById('chartContainer').getContext('2d'),{
+			   type : 'line',
+			   data: {
+             datasets:[
+                 {
+                     label: 'Bid',
+                     data: dps,
+                     lineTension: 0,
+                     backgroundColor: "rgba(0,256,0,0.4)",
+                 },
+                 {
+                     label: 'Ask',
+                     data: dps,
+                     lineTension: 0,
+                     backgroundColor: "rgba(255,0,0,0.4)",
+                 }
+             ]
+
+         },
+         options: {
+             scales: {
+                 xAxes: [{
+                     type: 'linear',
+                     position: 'bottom',
+                     display: true
+                 }]
+             }
+         }
+     });
+
+     ws = new WebSocket("ws://localhost:8000/depth/BTC/XRP");
+     ws.onopen = function () {
+     }
+
+     ws.onmessage = function(evt) {
+         dps = JSON.parse(evt.data);
+         console.log(dps);
+         chart.data.datasets[0].data=dps["Bid"];
+         chart.data.datasets[1].data=dps["Ask"];
+         chart.update()
+     }
+
+     ws.onclose = function(evt) {
+         alert("CLOSE");
+         ws = null;
+     }
+
+     ws.onerror = function(evt) {
+         alert("ERROR: " + evt.data);
+     }
+
+     return false;
+ }
+</script>
+</head>
+<body>
+<br>
+<div>
+    <canvas id="chartContainer" style="height: 300px; width:100%;"></canvas>
+</div>
+</body>
+</html>
