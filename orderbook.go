@@ -151,7 +151,7 @@ func (o *OrderBook) Order() (out chan *Message) {
 		mutex.Lock()
 		defer mutex.Unlock()
 		o.LastTimeUpdated = t
-		toRemove := make([]interface{}, 0, 15)
+		toRemove := make([]interface{}, 0, 7)
 
 		orderedincoming.Add(&OrderableMessage{seq, args})
 		iter := orderedincoming.Iterator()
@@ -172,7 +172,7 @@ func (o *OrderBook) Order() (out chan *Message) {
 			}
 		}
 		orderedincoming.Remove(toRemove...)
-		if orderedincoming.Size() > 15 {
+		if orderedincoming.Size() > 7 {
 			log.Println("(re)starting ", o.Pair)
 			currentSeq = o.Get() + 1
 		}
